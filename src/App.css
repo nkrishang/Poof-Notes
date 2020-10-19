@@ -1,0 +1,24 @@
+@tailwind base;
+
+@tailwind components;
+
+@tailwind utilities;
+
+textarea {
+  resize: none;
+}
+::-webkit-scrollbar {
+  display: none;
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+button:focus,
+button:active {
+    outline: none;
+}
+
+button {
+  outline: none !important; 
+}
