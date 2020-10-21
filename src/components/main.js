@@ -6,7 +6,8 @@ import '../output.css'
 import NoteInput from './input';
 import StickyNote from './sticky';
 
-import userbase from 'userbase-js'
+import userbase from 'userbase-js';
+import sha256 from 'js-sha256';
 
 function Main({user}) {
   //Clean up state
@@ -15,7 +16,8 @@ function Main({user}) {
   const [noteState, setNoteState] = React.useState({
     title: '',
     noteText: '',
-    noteStyle: "rounded-lg shadow-lg bg-indigo-200"
+    noteStyle: "rounded-lg shadow-lg bg-indigo-200",
+    file: null
   })
 
   const [color, setColor] = React.useState("indigo");
@@ -63,15 +65,45 @@ function Main({user}) {
     }
   }
 
+  function handleFiles(event) {        
+    const file = event.target.files[0];
+    setNoteState({...noteState, file:file});
+
+    const {name, size, type} = file;
+    console.log(name, size, type);
+  }
+
   function handleSubmit() {
+    let newItem;
+
     if(!noteState.title) {
-      setNoteState({...noteState, title: "New note"})
+      newItem = {...noteState, title: "New Note"};
+    } else {
+      newItem = {...noteState}
     }
+    const {title, noteText} = noteState
+    const itemId = sha256((title.concat(noteText)).concat(Math.random().toString().substring(2))).toString();
 
-    const newItem = {...noteState};
-    userbase.insertItem({databaseName: "notes", item: newItem})
+    userbase.insertItem({databaseName: "notes", item: newItem, itemId: itemId})
+    .then(() => {
+      if(noteState.file) {
+        userbase.uploadFile({databaseName: "notes", itemId: itemId, file: noteState.file})
+        .then(() => {
+          setNoteState({...noteState, title: "", noteText: "", file: null})
+          // console.log("file successfully uploaded");
+        })
+        .catch((e) => {
+          alert("Sorry, there was an error when uploading your file. Please try again.")
+          console.log(e);
+        })
+      }
+      setNoteState({...noteState, title: "", noteText: "", file: null})
+    })
+    .catch((e) => {
+      alert("Sorry, there was an error when making your note. Please try again.")
+      console.log(e)
+    })
 
-    setNoteState({...noteState, title: "", noteText: ""});
   } 
 
   return (
@@ -79,7 +111,7 @@ function Main({user}) {
       
       <div className="flex justify-center">
           <NoteInput handleNoteText={handleNoteText} handleNoteTitle={handleNoteTitle} 
-          handleStyle={handleStyle} color={color} title={noteState.title} noteText={noteState.noteText} handleSubmit={handleSubmit}/>
+          handleStyle={handleStyle} handleSubmit={handleSubmit} handleFiles={handleFiles} color={color} noteState={noteState}/>
       </div>
 
       <div className="m-auto my-4 w-4/5 h-auto">
@@ -87,9 +119,8 @@ function Main({user}) {
 
           {notes.map((note, index) => {
 
-            const {title, noteText, noteStyle} = note.item;
             return <li key={index}>
-              <StickyNote itemId={note.itemId} title={title} noteText={noteText} noteStyle={noteStyle}/>
+              <StickyNote itemId={note.itemId} noteState={note.item} fileId={note.fileId}/>
             </li>
           })}
         </ul>
