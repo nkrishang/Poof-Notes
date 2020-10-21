@@ -46,7 +46,7 @@ function Login({user, loading, info, authType, changeAuthType, changeInfo, handl
           </button>
         </form> 
         <p className="text-center text-gray-500 text-xs m-10">
-          This project is opensource.
+          This project is <span><a href="https://github.com/nkrishang/Poof-Notes" className="text-gray-600 underline" target="_blank" rel="noopener noreferrer">opensource</a></span>.
         </p>
       </div>
     </div>
