@@ -4,8 +4,10 @@ import '../output.css'
 
 import attachLogo from '../assets/paperclip.svg';
 
-function NoteInput({handleNoteText, handleNoteTitle, handleStyle, handleSubmit, color, noteText, title}) {
-  
+function NoteInput({handleNoteText, handleNoteTitle, handleStyle, handleSubmit, handleFiles, color, noteState}) {
+
+    const {noteText, title, file} = noteState;
+
     return (
         <div className="Note m-4">
             <div className="h-auto rounded-md shadow-lg bg-white" style={{width: "500px"}}>
@@ -28,10 +30,17 @@ function NoteInput({handleNoteText, handleNoteTitle, handleStyle, handleSubmit, 
                         </div>
 
                         <div className="m-2 flex items-center">
-                            <button className="">
-                                <img style={{opacity: "0.5"}} src={attachLogo} alt="attach"/>
-                            </button>
+
+                            <label htmlFor="fileInput">
+                                <p className="text-xs">
+                                    {file ? (file.name.length <= 10 ? file.name : `${file.name.slice(0, 7)}...`) : ''}
+                                </p>
+                                
+                                <img style={{opacity: `${file ? '0.8' : '0.3'}`}} src={attachLogo} alt="attach" className="my-2"/>
+                            </label>
                         </div>
+                        
+                        <input onChange={handleFiles} type="file" id="fileInput" className="bg-opacity-0 h-0 w-0 overflow-hidden"/>
 
                         <button onClick={handleSubmit} className="m-4 bg-transparent hover:bg-gray-800 text-gray-600 font-semibold hover:text-white py-2 px-4 border border-gray-600 hover:border-transparent rounded">
                             Make note
