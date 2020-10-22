@@ -2,6 +2,9 @@ import React from 'react';
 import '../App.css';
 import '../output.css'
 
+import { css } from "@emotion/core";
+import ClipLoader from "react-spinners/ClipLoader";
+
 import deleteicon from '../assets/x.svg'
 import attachLogo from '../assets/paperclip.svg';
 
@@ -15,6 +18,7 @@ function StickyNote({itemId, fileId, noteState}) {
   
   const [hover, setHover] = React.useState(false);
   const [source, setSource] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
 
   const [mediaDisplay, setMediaDisplay] = React.useState(false);
 
@@ -28,6 +32,8 @@ function StickyNote({itemId, fileId, noteState}) {
   function handleMedia() {
 
     if(!source) {
+      setLoading(true)
+
       userbase.getFile({databaseName: "notes", fileId: fileId})
       .then(({ file }) => {
         
@@ -38,14 +44,17 @@ function StickyNote({itemId, fileId, noteState}) {
         } else {
           setSource(url)
         }
+        setLoading(false)
+        setMediaDisplay(!mediaDisplay);
       })
       .catch((e) => {
         alert("Sorry, there was an error in loading media. Please try again.")
         console.log(e)
       })
+    } else {
+      setMediaDisplay(!mediaDisplay)
     }
 
-    setMediaDisplay(!mediaDisplay)
   }
 
   return (
@@ -82,6 +91,9 @@ function StickyNote({itemId, fileId, noteState}) {
         </div>
       </div>
 
+      <div style={{display: `${loading ? '' : 'none'}`}} className="mx-2">
+        <ClipLoader css={css} loading={loading}/>
+      </div>
       <div style={{height: "350px", width: "auto", display: `${mediaDisplay ? '' : 'none'}`}} className="">
         <Image src={source}/>
       </div>
