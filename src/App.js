@@ -3,6 +3,9 @@ import React from 'react';
 import './App.css';
 import './output.css';
 
+import { css } from "@emotion/core";
+import ClipLoader from "react-spinners/ClipLoader";
+
 import Login from './components/login';
 import Main from './components/main';
 
@@ -28,13 +31,8 @@ function App() {
 
     userbase.init({appId: AppID})
     .then((session) => {
-      if(session.user) {
-        setUser(session.user)
+      setUser(session.user)
         setLoading(false)
-      } else {
-        setLoading(false)
-      }
-      
     })
   }, [])
 
@@ -42,7 +40,10 @@ function App() {
     event.preventDefault();
 
     if(!username || !password) {
+      alert("You must enter both a username and passowrd.")
       return
+    } else {
+      setLoading(true)
     }
 
     if(authType === "signup") {
@@ -50,10 +51,12 @@ function App() {
       userbase.signUp({username: username, password: password, email: email, rememberMe: "local"})
       .then((user) => {
         setUser(user);
+        setLoading(false)
       })
       .catch((error) => {
         alert("Invalid username. Please try again with a different username.");
         console.log(error)
+        setLoading(false)
       })
 
     } else if (authType === "login") {
@@ -61,10 +64,12 @@ function App() {
       userbase.signIn({username: username, password: password})
       .then((user) => {
         setUser(user);
+        setLoading(false)
       })
       .catch((error) => {
         alert("Invalid username or password. Please try again.");
         console.log(error);
+        setLoading(false)
       })
 
     }    
@@ -73,9 +78,13 @@ function App() {
 
   function handleLogout() {;
 
+    setLoading(true)
     userbase.signOut()
     .then(() => {
       setUser(null);
+      setTimeout(() => {
+        setLoading(false)
+      }, 200)
     })
   }
 
@@ -110,15 +119,15 @@ function App() {
         <h3 className="font-serif text-lg text-gray-600">Make simple, tweet sized, shareable notes.</h3>
       </div>
         
-
-      <div style={{display: `${loading ? '' : 'none'}`}} className="m-auto text-center text-md">
-        Loading...
+      <div className="flex justify-center my-4" style={{display: `${loading ? '' : 'none'}`}}>
+        <ClipLoader css={css} loading={loading} />
       </div>
+      
 
       <Login user={user} loading={loading} info={info} authType={authType} changeAuthType={changeAuthType} 
       handleSubmit={handleSubmit} changeInfo={changeInfo} handlePasswordRecovery={handlePasswordRecovery}/>
 
-      <Main user={user}/>
+      <Main user={user} loading={loading}/>
 
     </div>
   );
