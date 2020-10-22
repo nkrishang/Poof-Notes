@@ -9,7 +9,7 @@ import StickyNote from './sticky';
 import userbase from 'userbase-js';
 import sha256 from 'js-sha256';
 
-function Main({user}) {
+function Main({user, loading}) {
   //Clean up state
   const [notes, setNotes] = React.useState([])
 
@@ -107,7 +107,7 @@ function Main({user}) {
   } 
 
   return (
-    <div className="Main" style={{display: `${user ? '' : 'none'}`}}>
+    <div className="Main" style={{display: `${(user && !loading) ? '' : 'none'}`}}>
       
       <div className="flex justify-center">
           <NoteInput handleNoteText={handleNoteText} handleNoteTitle={handleNoteTitle} 
