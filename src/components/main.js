@@ -32,11 +32,27 @@ function Main({user, loading}) {
   }, [user])
 
   function changeHandler(items) {
-    setNotes(items)
+    const reversedItems = items.reverse();
+    setNotes(reversedItems)
   }
 
   function handleNoteText(event) {
-    setNoteState({...noteState, noteText: event.target.value});
+
+    const value = event.target.value;
+    if(value.split('\n').length > 7) {
+      return
+      // Maybe add error alert?
+    }
+    setNoteState({...noteState, noteText: value});
+  }
+
+  function handleTranscription(newText) {
+    
+    setNoteState((noteState) => {
+      const {noteText} = noteState;
+      const newState = {...noteState, noteText: (noteText + newText + ' ')};
+      setNoteState(newState);
+    })
   }
 
   function handleNoteTitle(event) {
@@ -110,7 +126,7 @@ function Main({user, loading}) {
     <div className="Main" style={{display: `${(user && !loading) ? '' : 'none'}`}}>
       
       <div className="flex justify-center">
-          <NoteInput handleNoteText={handleNoteText} handleNoteTitle={handleNoteTitle} 
+          <NoteInput handleNoteText={handleNoteText} handleNoteTitle={handleNoteTitle} handleTranscription={handleTranscription}
           handleStyle={handleStyle} handleSubmit={handleSubmit} handleFiles={handleFiles} color={color} noteState={noteState}/>
       </div>
 
