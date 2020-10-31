@@ -70,11 +70,11 @@ function StickyNote({itemId, fileId, noteState}) {
           {title}
         </div>
 
-        <div className="mx-2 px-4 font-mono h-48">
+        <div className="mx-2 px-4 font-mono h-56" style={{whiteSpace: "pre-line"}}>
           {noteText}
         </div>
 
-        <div className="flex justify-end mx-4 my-10">
+        <div className="flex justify-end mx-4 my-4">
 
           <button className="" onClick={handleMedia}>
             <img style={{opacity: `${mediaDisplay ? '0.8' : '0.3'}`, display: `${file ? '' : 'none'}`}} src={attachLogo} alt="attach" className="m-2"/>
