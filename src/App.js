@@ -3,6 +3,8 @@ import React from 'react';
 import './App.css';
 import './output.css';
 
+import {useLocalStorageState} from './utils/hooks';
+
 import { css } from "@emotion/core";
 import ClipLoader from "react-spinners/ClipLoader";
 
@@ -15,11 +17,12 @@ require('dotenv').config()
 
 function App() {
 
-  const [authType, setAuthType] = React.useState('signup')
+  const [authType, setAuthType] = useLocalStorageState('authType', 'signup')
   const [loading, setLoading] = React.useState(true)
 
   const [user, setUser] = React.useState(null);
-  const [info, setInfo] = React.useState({
+  
+  const [info, setInfo] = useLocalStorageState('auth', {
     username: '',
     password: '',
     email: ''
