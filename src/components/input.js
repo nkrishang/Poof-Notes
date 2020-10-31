@@ -24,8 +24,13 @@ function NoteInput({handleNoteText, handleNoteTitle, handleStyle, handleSubmit, 
     })
 
     React.useEffect(() => {
-        const socketio = io("https://poofnotes.herokuapp.com");
-        // const socketio = io("http://localhost:8080");
+        const socketio = (
+            window.location.hostname === "localhost"
+                ? io("http://localhost:8080")
+            // Insert own server endpoint
+                : io("https://myapp.herokuapp.com")
+        )
+        
         const socket = socketio.on('connect', () => {
           setRecording(false)
           console.log('React socket client connected.')
