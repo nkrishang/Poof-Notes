@@ -10,7 +10,8 @@ import Login from './components/login';
 import Main from './components/main';
 
 import userbase from 'userbase-js'
-import AppID from './appid';
+
+require('dotenv').config()
 
 function App() {
 
@@ -27,9 +28,9 @@ function App() {
   const {username, password, email} = info;
 
   React.useEffect(() => {
-    console.log("rendered effect")
 
-    userbase.init({appId: AppID})
+    const appId = process.env.REACT_APP_APP_ID
+    userbase.init({appId: appId})
     .then((session) => {
       setUser(session.user)
         setLoading(false)
