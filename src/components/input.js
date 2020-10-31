@@ -11,9 +11,11 @@ import io from 'socket.io-client';
 import RecordRTC, { StereoAudioRecorder } from 'recordrtc';
 import ss from 'socket.io-stream';
 
-function NoteInput({handleNoteText, handleNoteTitle, handleStyle, handleSubmit, handleFiles, handleTranscription, color, noteState}) {
+require('dotenv').config()
 
-    const {noteText, title, file} = noteState;
+function NoteInput({handleNoteText, handleNoteTitle, handleStyle, handleSubmit, handleFiles, handleTranscription, file, noteState}) {
+
+    const {noteText, title, color} = noteState;
     const collapseState = (title || noteText) ? true : false; 
 
     const [recording, setRecording] = React.useState(false)
@@ -27,8 +29,7 @@ function NoteInput({handleNoteText, handleNoteTitle, handleStyle, handleSubmit, 
         const socketio = (
             window.location.hostname === "localhost"
                 ? io("http://localhost:8080")
-            // Insert own server endpoint
-                : io("https://myapp.herokuapp.com")
+                : io(process.env.REACT_APP_SERVER)
         )
         
         const socket = socketio.on('connect', () => {
@@ -104,6 +105,13 @@ function NoteInput({handleNoteText, handleNoteTitle, handleStyle, handleSubmit, 
         setAudioObjects({...audioObjects, recordRtc: null, mediaStream: null});
         setRecording(false)
     }
+
+    function handleNoteSubmit() {
+        if(recording) {
+            stopRecording();
+        }
+        handleSubmit();
+    }
       
 
     return (
@@ -150,7 +158,7 @@ function NoteInput({handleNoteText, handleNoteTitle, handleStyle, handleSubmit, 
                             
                             <input onChange={handleFiles} type="file" id="fileInput" className="bg-opacity-0 h-0 w-0 overflow-hidden"/>
 
-                            <button onClick={handleSubmit} className="m-4 bg-transparent hover:bg-gray-800 text-gray-600 font-semibold hover:text-white py-2 px-4 border border-gray-600 hover:border-transparent rounded">
+                            <button onClick={handleNoteSubmit} className="m-4 bg-transparent hover:bg-gray-800 text-gray-600 font-semibold hover:text-white py-2 px-4 border border-gray-600 hover:border-transparent rounded">
                                 Make note
                             </button>
                         </div>
